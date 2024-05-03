@@ -5,7 +5,7 @@ import validator from 'validator'
 import passwordValidator from 'password-validator'
 import { IoMdEye } from "react-icons/io";
 import { IoMdEyeOff } from "react-icons/io";
-import { FaGoogle } from "react-icons/fa";
+import { FaGoogle, FaSpinner } from "react-icons/fa";
 import { Button } from '../ui/button'
 import { addUser } from '@/lib/userController'
 import SubmitBtn from '../customUi/SubmitBtn'
@@ -23,6 +23,8 @@ const SignUpForm = () => {
   
   const [isPasswordVisible , setIsPasswordVisible] = useState(false)
 
+  //loading state for google sign-up
+  const [isLoading, setIsLoading] = useState(false)
 
   
   //schema to check how strong the password is.
@@ -70,6 +72,12 @@ const SignUpForm = () => {
     setUserName(e.target.value)
   }
 
+  const handleGoogleSignUp = () => {
+    setIsLoading(true)
+    signIn("google")
+    setIsLoading(false)
+  }
+
 
   return (
     <div className='bg-slate-50 border rounded-md px-10 py-16 my-5'>
@@ -102,8 +110,8 @@ const SignUpForm = () => {
     </form>
 
       <div className='flex justify-center z-50'>
-        <Button className='z-50' type='button' onClick={() => signIn("google")}>
-          <FaGoogle size={24} />
+        <Button className='z-50' type='button' onClick={() => handleGoogleSignUp()}>
+          {isLoading ? <FaSpinner size={24} className='animate-spin'/> : <FaGoogle size={24} />}
         </Button>
       </div>
     </div>
