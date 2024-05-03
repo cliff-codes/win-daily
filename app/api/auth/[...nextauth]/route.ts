@@ -7,6 +7,7 @@ import CredentialsProvider  from "next-auth/providers/credentials"
 import bcrypt from "bcrypt"
 import generatePassword from "generate-password"
 import { logInUser } from "@/lib/userController"
+import { redirect } from "next/navigation"
 
 
 const customPassword = generatePassword.generate({
@@ -56,8 +57,6 @@ export const authOptions: NextAuthOptions = {
     },
     callbacks: {
         async jwt({token, user}) {
-            console.log("token : ", token)
-            console.log("user : ", user)
             return token
         },
         async session({session, token}){
@@ -77,7 +76,6 @@ export const authOptions: NextAuthOptions = {
             
             if(!existingUser || null){
                 //create a new user
-                 console.log("working")
                 const salt = await bcrypt.genSalt(10)
                 const hashedPassword = bcrypt.hashSync(customPassword, salt)
                 const newUser = await new User({
@@ -92,7 +90,7 @@ export const authOptions: NextAuthOptions = {
             }else{
                 console.log("user already exist")
             }
-
+    
             return true
         }
     },

@@ -5,15 +5,17 @@ import { Input } from '../ui/input'
 import { useState } from 'react'
 import { Button } from '../ui/button'
 import { FaGoogle } from 'react-icons/fa'
+import { FaSpinner } from "react-icons/fa";
 import passwordValidator from 'password-validator'
 import validator from 'validator'
-import SubmitBtn from '../customUi/SubmitBtn'
 import { signIn } from 'next-auth/react'
 import { useSearchParams } from 'next/navigation'
 
 const LoginForm = () => {
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get("callbackUrl")
+
+  const [isLoading, setIsLoading] = useState(false)
 
   const [password, setPassword] = useState<string>("")
   const [isPasswordValid, setIsPasswordValid] = useState<boolean | any[]>(true)
@@ -61,14 +63,14 @@ const LoginForm = () => {
 
   const handleFormSubmit = async (e:React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-
+    setIsLoading(true)
     const res = await signIn("credentials", {
       email: email,
       password: password,
       redirect: true,
       callbackUrl: callbackUrl ? callbackUrl : "/" 
     })
-    console.log(res)
+    setIsLoading(false)
   }
 
   return (
@@ -93,11 +95,13 @@ const LoginForm = () => {
       </div>
       
       {/* submit form data */}
-      <SubmitBtn name = {'login'}/>
+      <Button type='submit' disabled = {isLoading} className='w-full'>
+        {isLoading ?  <FaSpinner size = {20} className='animate-spin' /> : 'login' }
+      </Button>
 
       <div className='text-center text-sm'>or login with</div>
       <div className='flex justify-center'>
-        <Button type='button'>
+        <Button type='button' onClick={() => signIn("google")}>
           <FaGoogle size={24} />
         </Button>
       </div>
