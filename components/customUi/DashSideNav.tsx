@@ -7,9 +7,8 @@ import { usePathname } from 'next/navigation'
 
 const DashSideNav = () => {
     const pathName = usePathname()
-    console.log(pathName)
-    const currentPath = pathName.split("/").pop()
-    console.log(currentPath)
+    const currentPath = `/${pathName.split("/").pop()}`
+
 
     const sideNavLinks = [
         {
@@ -35,7 +34,7 @@ const DashSideNav = () => {
             sideNavLinks.map((el, index) => (
                 <Link href={`/dashboard${el.link}`} key={index}>
                     <Button className={clsx("w-full bg-slate-200 text-slate-900 hover:text-slate-50", 
-                        currentPath === el.link && "bg-slate-900 text-slate-50"
+                        currentPath === el.link && "bg-slate-800 text-slate-50"
                     )}>{el.name}</Button>
                 </Link>
             ))

@@ -1,6 +1,7 @@
 
 "use client"
 import { signOut } from "next-auth/react"
+import { useSession } from "next-auth/react"
 import { Button } from "../ui/button"
 import {
     Popover,
@@ -13,6 +14,10 @@ import { FaSpinner } from "react-icons/fa"
 
 const UserProfile = () => {
     const [isLoading, setIsLoading] = useState(false)
+    const {data: session} = useSession()
+
+    const firstCharOfUserName = session?.user?.name?.substring(0,1)
+    
 
     //signOut user
     const handleSignOut = () => {
@@ -24,7 +29,7 @@ const UserProfile = () => {
   return (
     <Popover>
         <PopoverTrigger>
-            <div className="w-12 h-12 rounded-full bg-slate-200 flex justify-center place-items-center border-4 border-slate-900  "><div>U</div></div>
+            <div className="w-12 h-12 rounded-full bg-slate-200 flex justify-center place-items-center border-4 border-slate-900  "><div>{firstCharOfUserName}</div></div>
         </PopoverTrigger>
         <PopoverContent>
             <Button onClick={handleSignOut}  className="w-full">
