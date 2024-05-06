@@ -10,6 +10,7 @@ import {
   } from "@/components/ui/popover"
 import { useState } from "react"
 import { FaSpinner } from "react-icons/fa"
+
   
 
 const UserProfile = () => {
@@ -17,7 +18,7 @@ const UserProfile = () => {
     const {data: session} = useSession()
 
     const firstCharOfUserName = session?.user?.name?.substring(0,1)
-    
+    console.log(firstCharOfUserName)
 
     //signOut user
     const handleSignOut = () => {

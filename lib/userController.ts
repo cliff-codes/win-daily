@@ -58,3 +58,18 @@ export const logInUser = async (email: string, password: string) => {
       return { data: null, error: error.message };
     }
   };
+
+export const findUserName = async(email: string) => {
+  try {
+    await connectToDB()
+
+    const user = await User.findOne({email: email})
+  
+    if(!user){
+      return '' 
+    }
+    return await user._doc.userName
+  } catch (error) {
+    throw new Error("Error finding username")
+  }
+}

@@ -11,7 +11,7 @@ const Showcase = () => {
         </div>
         
         <div className="pt-8">
-            <LinkBtn name={"Plan and Win 10 points  🎉"} route={"/dashboard"} />
+            <LinkBtn name={"Plan and Win 10 points  🎉"} disabled = {false} submissionType={undefined}  route={"/dashboard/streaks"} />
         </div>
     </section>
   )
