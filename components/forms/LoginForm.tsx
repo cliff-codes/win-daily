@@ -68,7 +68,7 @@ const LoginForm = () => {
       email: email,
       password: password,
       redirect: true,
-      callbackUrl: callbackUrl ? callbackUrl : "/" 
+      callbackUrl: callbackUrl ? callbackUrl : "/dashboard/streaks" 
     })
     setIsLoading(false)
   }

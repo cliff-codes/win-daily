@@ -7,7 +7,7 @@ const LoginPage = async() => {
   const session = await getServerSession(authOptions)
 
   if(session){
-    redirect("/")
+    redirect("/dashboard/streaks")
   }
   
   return (

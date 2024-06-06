@@ -78,11 +78,23 @@ const SignUpForm = () => {
     setIsLoading(false)
   }
 
+  const handleSignUp = async() => {
+    const {data} : any = await addUser(userName, email, password)
+    if(data){
+      signIn("credentials", {
+        email,
+        password,
+        redirect: true,
+        callbackUrl: "/dashboard/streaks"
+      })
+    }
+  }
+
 
   return (
     <div className='bg-slate-50 border rounded-md px-10 py-16 my-5'>
         <form className='flex flex-col gap-6  '
-      action={addUser}
+      action={handleSignUp}
       >
       <h4 className='text-center text-slate-900 capitalize font-bold '>sign-up</h4>
       <div className='flex flex-col gap-2'>

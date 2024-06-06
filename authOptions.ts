@@ -6,7 +6,8 @@ import CredentialsProvider  from "next-auth/providers/credentials"
 import bcrypt from "bcrypt"
 import generatePassword from "generate-password"
 import { logInUser } from "@/lib/userController"
-import { redirect } from "next/navigation"
+import jwt from "jsonwebtoken"
+
 
 const customPassword = generatePassword.generate({
     length: 16,
@@ -37,7 +38,8 @@ export const authOptions: NextAuthOptions = {
                 
                 //login user
                 const response = await logInUser(credentials.email, credentials.password)
-                const loggedInUser = response.data
+                const loggedInUser = await response.data
+                
                 console.log("logged: ", loggedInUser)
 
                 //return user if everything is fine
@@ -49,19 +51,16 @@ export const authOptions: NextAuthOptions = {
             },
         })
     ],
-    secret: process.env.NEXT_SECRET,
+    secret: process.env.NEXTAUTH_SECRET,
     session: {
         strategy: "jwt"
     },
     callbacks: {
 
-        async jwt({token, user}) {
+        async jwt({token}) {
             return token
         },
-        async session({session, token}){
-            if(session?.user){
-                session.user = token
-            }
+        async session({session}){
             return session
         },
         async signIn({user}){

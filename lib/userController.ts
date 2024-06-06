@@ -6,10 +6,14 @@ import { User } from "./models"
 import bcryptjs from "bcrypt"
 
 
-//signing up as a user
-export const addUser = async(e:FormData) => {
 
-    const {userName, email, password} = Object.fromEntries(e)
+const JWT_SECRET = process.env.NEXTAUTH_SECRET;
+
+if (!JWT_SECRET) {
+  throw new Error('JWT_SECRET environment variable is not defined');
+}
+//signing up as a user
+export const addUser = async(userName: string, email: string, password: string) => {
 
     if(!userName || !email || !password){
         return NextResponse.json({error: 'Input field data missing'}, {status: 500})
@@ -28,33 +32,34 @@ export const addUser = async(e:FormData) => {
             userName,
             password: hashedPassword
         })
+        
+        const res = await newUser.save()
+        return {data: res}
 
-        console.log(newUser)
-
-        await newUser.save()
     } catch (error) {
         console.log(error)
         NextResponse.json({error, 'message': 'Failed creating user account'})
     }
 }
 
-export const logInUser = async (email: string, password: string) => {
+export const logInUser = async (email: string | FormDataEntryValue, password: string | FormDataEntryValue) => {
     try {
       await connectToDB();
       const user = await User.findOne({ email: email });
+
       if (!user) {
         throw new Error("User Not Found.");
       }
   
-      const isOk = await bcryptjs.compare(password, user.password);
+      const isOk =  bcryptjs.compareSync(password as string, user.password);
       console.log("isOk:", isOk);
       if (!isOk) {
         throw new Error("Invalid email or password");
       }
       return { data: user, error: null };
     } catch (error: any) {
+
       console.log("user", error.message);
-      // handleError(error);
       return { data: null, error: error.message };
     }
   };
