@@ -8,17 +8,34 @@ import {
     PopoverContent,
     PopoverTrigger,
   } from "@/components/ui/popover"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { FaSpinner } from "react-icons/fa"
+import { findUserName } from "@/lib/userController"
 
   
 
 const UserProfile = () => {
     const [isLoading, setIsLoading] = useState(false)
+    const [firstCharOfUserName, setFirstCharOfUserName] = useState("")
+
     const {data: session} = useSession()
 
-    const firstCharOfUserName = session?.user?.name?.substring(0,1)
-    console.log(firstCharOfUserName)
+    async function getUserName(){
+      const sessionEmail = session?.user?.email
+      if(sessionEmail){
+        const name = await findUserName(sessionEmail)
+        setFirstCharOfUserName(name.substring(0,1))
+      }
+    }
+    
+    useEffect(() => {
+      if(session?.user?.name?.substring(0,1)){
+        setFirstCharOfUserName(session?.user?.name?.substring(0,1))
+      }else{
+        getUserName()
+      }
+    },[])
+  
 
     //signOut user
     const handleSignOut = () => {

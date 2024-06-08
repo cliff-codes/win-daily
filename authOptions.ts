@@ -6,7 +6,6 @@ import CredentialsProvider  from "next-auth/providers/credentials"
 import bcrypt from "bcrypt"
 import generatePassword from "generate-password"
 import { logInUser } from "@/lib/userController"
-import jwt from "jsonwebtoken"
 
 
 const customPassword = generatePassword.generate({
@@ -38,12 +37,10 @@ export const authOptions: NextAuthOptions = {
                 
                 //login user
                 const response = await logInUser(credentials.email, credentials.password)
-                const loggedInUser = await response.data
-                
-                console.log("logged: ", loggedInUser)
+                const loggedInUser = await response.data.toJSON()
 
                 //return user if everything is fine
-                if(loggedInUser && response.error === null){
+                if(loggedInUser){
                     return loggedInUser
                 }else{
                     throw new Error(response.error)

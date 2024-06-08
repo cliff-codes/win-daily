@@ -10,6 +10,7 @@ import { Button } from '../ui/button'
 import { addUser } from '@/lib/userController'
 import SubmitBtn from '../customUi/SubmitBtn'
 import {signIn} from "next-auth/react"
+import { NextResponse } from 'next/server'
 
 
 
@@ -79,14 +80,20 @@ const SignUpForm = () => {
   }
 
   const handleSignUp = async() => {
-    const {data} : any = await addUser(userName, email, password)
-    if(data){
-      signIn("credentials", {
-        email,
-        password,
-        redirect: true,
-        callbackUrl: "/dashboard/streaks"
-      })
+    try {
+      const {data} : any = await addUser(userName, email, password)
+      
+      if(data){
+        signIn("credentials", {
+          email,
+          password,
+          redirect: true,
+          callbackUrl: "/dashboard/streaks"
+        })
+      }
+    } catch (error: any) {
+        console.log(error)
+        new NextResponse(JSON.stringify(error));
     }
   }
 

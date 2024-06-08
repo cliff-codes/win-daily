@@ -52,7 +52,7 @@ export const logInUser = async (email: string | FormDataEntryValue, password: st
       }
   
       const isOk =  bcryptjs.compareSync(password as string, user.password);
-      console.log("isOk:", isOk);
+    
       if (!isOk) {
         throw new Error("Invalid email or password");
       }
@@ -64,7 +64,7 @@ export const logInUser = async (email: string | FormDataEntryValue, password: st
     }
   };
 
-export const findUserName = async(email: string) => {
+export const findUserName = async(email: string): Promise<string> => {
   try {
     await connectToDB()
 
