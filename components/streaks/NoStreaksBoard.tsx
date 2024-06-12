@@ -1,19 +1,21 @@
-import React from 'react'
-import { Popover, PopoverTrigger, PopoverContent } from '../ui/popover'
 
+import React from 'react'
+import { Button } from '../ui/button'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 const NoStreaksBoard = () => {
+  const pathname = usePathname();
+  console.log(pathname)
+
   return (
     <div className='w-full'>
-        <div className='w-full  h-56 bg-slate-50 flex justify-center place-items-center flex-col rounded-md gap-1'>
+        <div className='w-full  h-96 bg-slate-50 flex justify-center place-items-center flex-col rounded-md gap-1'>
             <h1>No streaks😞</h1>
-            <Popover>
-                <PopoverTrigger>start a streak</PopoverTrigger>
-
-                <PopoverContent>
-                    set up streak challenge
-                </PopoverContent>
-            </Popover>
+            
+            <Link href={`${pathname}/set-up`}>
+              <Button>add  streak</Button>
+            </Link>
         </div>
 
         <div>

@@ -2,7 +2,7 @@ import React from 'react'
 
 const Resolutions = () => {
   return (
-    <div>Resolutions</div>
+    <div className='w-full bg-slate-50'>Resolutions</div>
   )
 }
 

@@ -2,7 +2,7 @@ import React from 'react'
 
 const Challenges = () => {
   return (
-    <div>Challenges</div>
+    <div className='w-full bg-slate-50'>Challenges</div>
   )
 }
 

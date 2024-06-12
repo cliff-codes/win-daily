@@ -2,7 +2,7 @@ import React from 'react'
 
 const HabitChange = () => {
   return (
-    <div>HabitChange</div>
+    <div className='w-full bg-slate-50'>HabitChange</div>
   )
 }
 

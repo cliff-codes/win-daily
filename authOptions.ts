@@ -82,8 +82,6 @@ export const authOptions: NextAuthOptions = {
                 //save new user
                 await newUser.save()
     
-            }else{
-                console.log("user already exist")
             }
     
             return true

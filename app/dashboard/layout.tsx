@@ -1,4 +1,4 @@
-import DashSideNav from "@/components/customUi/DashSideNav";
+import LayoutPage from "@/components/streaks/LayoutPage";
 
 
 export default async function Layout({
@@ -9,10 +9,7 @@ export default async function Layout({
   
     return (
      <main className="flex justify-center">
-        <div className="w-full max-w-7xl mx-3 flex gap-5 pt-8">
-            <DashSideNav/>
-            {children}
-        </div>
+       <LayoutPage>{children}</LayoutPage>
      </main>
     );
   }
