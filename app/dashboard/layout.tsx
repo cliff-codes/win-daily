@@ -1,15 +1,13 @@
-import LayoutPage from "@/components/streaks/LayoutPage";
-
+import LayoutPage from '@/components/streaks/LayoutPage';
 
 export default async function Layout({
     children,
-  }: Readonly<{
+}: Readonly<{
     children: React.ReactNode;
-  }>) {
-  
+}>) {
     return (
-     <main className="flex justify-center">
-       <LayoutPage>{children}</LayoutPage>
-     </main>
+        <main className='flex justify-center'>
+            <LayoutPage>{children}</LayoutPage>
+        </main>
     );
-  }
+}

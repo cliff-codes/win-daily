@@ -1,10 +1,8 @@
-import ErrorPage from '@/components/customUi/ErrorPage'
-import React from 'react'
+import ErrorPage from '@/components/customUi/ErrorPage';
+import React from 'react';
 
 const AuthErrorPage = () => {
-  return (
-    <ErrorPage />
-  )
-}
+    return <ErrorPage />;
+};
 
-export default AuthErrorPage
+export default AuthErrorPage;

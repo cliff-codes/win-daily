@@ -1,4 +1,40 @@
+# Win Daily - Habit Tracking App
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+
+## Code Formatting & Style Guide
+
+This project uses a robust formatting setup with **4-space indentation** throughout:
+
+### Formatting Tools
+- **Prettier**: Code formatter with 4-space indentation
+- **ESLint**: Code linting with Prettier integration
+- **EditorConfig**: Editor-agnostic coding style
+
+### Available Scripts
+```bash
+# Format all files with Prettier
+pnpm format
+
+# Check formatting without making changes
+pnpm format:check
+
+# Run ESLint
+pnpm lint
+
+# Fix ESLint issues automatically
+pnpm lint:fix
+
+# Format and fix all issues
+pnpm format:fix
+```
+
+### Editor Setup
+For VS Code, install these extensions:
+- Prettier - Code formatter
+- ESLint
+
+The project includes `.vscode/settings.json` for automatic formatting on save.
 
 ## Getting Started
 
