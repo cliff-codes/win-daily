@@ -33,11 +33,13 @@
         "react": "^18",
         "react-day-picker": "^8.10.1",
         "react-dom": "^18",
+        "react-hook-form": "^7.60.0",
         "react-icons": "^5.2.0",
         "secure-random-password": "^0.2.3",
         "tailwind-merge": "^2.3.0",
         "tailwindcss-animate": "^1.0.7",
-        "validator": "^13.11.0"
+        "validator": "^13.11.0",
+        "zod": "^3.25.75"
     },
     "devDependencies": {
         "@types/jsonwebtoken": "^9.0.6",

@@ -7,11 +7,13 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 This project uses a robust formatting setup with **4-space indentation** throughout:
 
 ### Formatting Tools
+
 - **Prettier**: Code formatter with 4-space indentation
 - **ESLint**: Code linting with Prettier integration
 - **EditorConfig**: Editor-agnostic coding style
 
 ### Available Scripts
+
 ```bash
 # Format all files with Prettier
 pnpm format
@@ -30,7 +32,9 @@ pnpm format:fix
 ```
 
 ### Editor Setup
+
 For VS Code, install these extensions:
+
 - Prettier - Code formatter
 - ESLint
 

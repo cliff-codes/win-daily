@@ -1,138 +1,183 @@
 'use client';
-import { useEffect } from 'react';
-import { IoMdEye, IoMdEyeOff } from 'react-icons/io';
-import { Input } from '../ui/input';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
+import { Input } from '../ui/input';
 import { Button } from '../ui/button';
+import { PasswordInput } from '../ui/password-input';
 import { FaGoogle } from 'react-icons/fa';
 import { FaSpinner } from 'react-icons/fa';
-import passwordValidator from 'password-validator';
-import validator from 'validator';
 import { signIn } from 'next-auth/react';
 import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
+import { loginSchema, type LoginFormData } from '@/lib/zodSchemas';
 
 const LoginForm = () => {
     const searchParams = useSearchParams();
     const callbackUrl = searchParams.get('callbackUrl');
-
     const [isLoading, setIsLoading] = useState(false);
 
-    const [password, setPassword] = useState<string>('');
-    const [isPasswordValid, setIsPasswordValid] = useState<boolean | any[]>(true);
-    const [email, setEmail] = useState<string>('');
-    const [isEmailValid, setIsEmailValid] = useState<boolean>(true);
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isSubmitting },
+        setError,
+    } = useForm<LoginFormData>({
+        resolver: zodResolver(loginSchema),
+        mode: 'onChange',
+    });
 
-    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-
-    const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setEmail(e.target.value);
-    };
-
-    const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setPassword(e.target.value);
-    };
-
-    const togglePasswordVisibility = () => {
-        console.log('working');
-        setIsPasswordVisible(!isPasswordVisible);
-    };
-
-    //schema to check how strong the password is.
-    const passwordSchema = new passwordValidator();
-    passwordSchema.is().min(8).has().uppercase().has().lowercase().has().digits(1).has().symbols(1);
-
-    const validatePassword = (password: string): boolean | any[] => {
-        const isValid = passwordSchema.validate(password);
-        return isValid;
-    };
-
-    //validating email
-    const validateEmail = (email: string) => {
-        const bool = validator.isEmail(email);
-        setIsEmailValid(bool);
-    };
-
-    useEffect(() => {
-        if (!(email == '')) {
-            validateEmail(email);
-        }
-        if (!(password == '')) {
-            setIsPasswordValid(validatePassword(password));
-        }
-    }, [email, password]);
-
-    const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
+    const onSubmit = async (data: LoginFormData) => {
         setIsLoading(true);
-        const res = await signIn('credentials', {
-            email: email,
-            password: password,
-            redirect: true,
-            callbackUrl: callbackUrl ? callbackUrl : '/dashboard/streaks',
-        });
-        setIsLoading(false);
+        try {
+            const result = await signIn('credentials', {
+                email: data.email,
+                password: data.password,
+                redirect: false,
+            });
+
+            if (result?.error) {
+                setError('root', {
+                    type: 'manual',
+                    message: 'Invalid email or password',
+                });
+            } else {
+                // Redirect on success
+                window.location.href = callbackUrl || '/dashboard/streaks';
+            }
+        } catch (error) {
+            setError('root', {
+                type: 'manual',
+                message: 'An error occurred. Please try again.',
+            });
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
-        <form
-            className='flex flex-col place-items-center  gap-6 border bg-slate-50 px-10 py-16 rounded-md'
-            onSubmit={handleFormSubmit}
-        >
-            <h4 className='text-center text-slate-900 capitalize font-bold '>Login</h4>
-            <div className='flex flex-col gap-2'>
-                <div>
-                    <Input
-                        className='w-80'
-                        type='email'
-                        name='email'
-                        required
-                        onChange={handleEmailChange}
-                    />
-                    {!isEmailValid && (
-                        <div className='text-sm bg-red-300 text-red-600 px-4 my-1 rounded-sm'>
-                            invalid email
-                        </div>
-                    )}
-                </div>
-                <div>
-                    <div className='flex place-items-center relative'>
-                        <Input
-                            className='w-80 pr-6'
-                            type={isPasswordVisible ? 'text' : 'password'}
-                            name='password'
-                            required
-                            onChange={handlePasswordChange}
-                        />
-                        <span
-                            className='absolute right-2 cursor-pointer hover:bg-slate-50 py-1 px-1 box-border rounded-full z-50'
-                            onClick={() => togglePasswordVisibility()}
-                        >
-                            {!isPasswordVisible ? <IoMdEyeOff size={16} /> : <IoMdEye size={16} />}
-                        </span>
+        <div className='min-h-screen flex items-center justify-center p-4'>
+            <div className='w-full max-w-md'>
+                <form
+                    className='bg-white rounded-2xl shadow-xl border border-gray-100 p-8 space-y-6'
+                    onSubmit={handleSubmit(onSubmit)}
+                >
+                    {/* Header */}
+                    <div className='text-center space-y-2'>
+                        <h1 className='text-3xl font-bold text-gray-900'>Welcome Back</h1>
+                        <p className='text-gray-600'>Sign in to your account to continue</p>
                     </div>
-                    {!isPasswordValid && (
-                        <div className='text-sm bg-red-300 text-red-600 px-4 my-1 rounded-sm '>
-                            Password must be strong.
-                            <br /> Please include a combination of <br />
-                            lowercase letters, uppercase letters,
-                            <br /> numbers, and special characters
+
+                    {/* Form Fields */}
+                    <div className='space-y-4'>
+                        {/* Email Field */}
+                        <div className='space-y-2'>
+                            <label htmlFor='email' className='text-sm font-medium text-gray-700'>
+                                Email Address
+                            </label>
+                            <Input
+                                id='email'
+                                className={`w-full h-12 px-4 border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg transition-colors ${
+                                    errors.email
+                                        ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
+                                        : ''
+                                }`}
+                                type='email'
+                                placeholder='Enter your email'
+                                {...register('email')}
+                            />
+                            {errors.email && (
+                                <div className='text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg border border-red-200'>
+                                    {errors.email.message}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Password Field */}
+                        <div className='space-y-2'>
+                            <label htmlFor='password' className='text-sm font-medium text-gray-700'>
+                                Password
+                            </label>
+                            <PasswordInput
+                                id='password'
+                                placeholder='Enter your password'
+                                error={!!errors.password}
+                                {...register('password')}
+                            />
+                            {errors.password && (
+                                <div className='text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg border border-red-200'>
+                                    {errors.password.message}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Root Error */}
+                    {errors.root && (
+                        <div className='text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg border border-red-200'>
+                            {errors.root.message}
                         </div>
                     )}
-                </div>
-            </div>
 
-            {/* submit form data */}
-            <Button type='submit' disabled={isLoading} className='w-full'>
-                {isLoading ? <FaSpinner size={20} className='animate-spin' /> : 'login'}
-            </Button>
+                    {/* Submit Button */}
+                    <Button
+                        type='submit'
+                        disabled={isSubmitting || isLoading}
+                        className='w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+                    >
+                        {isSubmitting || isLoading ? (
+                            <div className='flex items-center space-x-2'>
+                                <FaSpinner size={18} className='animate-spin' />
+                                <span>Signing in...</span>
+                            </div>
+                        ) : (
+                            'Sign In'
+                        )}
+                    </Button>
 
-            <div className='text-center text-sm'>or login with</div>
-            <div className='flex justify-center'>
-                <Button type='button' onClick={() => signIn('google')}>
-                    <FaGoogle size={24} />
-                </Button>
+                    {/* Divider */}
+                    <div className='relative'>
+                        <div className='absolute inset-0 flex items-center'>
+                            <div className='w-full border-t border-gray-300' />
+                        </div>
+                        <div className='relative flex justify-center text-sm'>
+                            <span className='px-2 bg-white text-gray-500'>Or continue with</span>
+                        </div>
+                    </div>
+
+                    {/* Google Sign In */}
+                    <Button
+                        type='button'
+                        onClick={() => signIn('google')}
+                        className='w-full h-12 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium rounded-lg transition-colors flex items-center justify-center space-x-2'
+                    >
+                        <FaGoogle size={20} className='text-red-500' />
+                        <span>Sign in with Google</span>
+                    </Button>
+
+                    {/* Links */}
+                    <div className='space-y-3 text-center'>
+                        <div className='text-sm text-gray-600'>
+                            Don&apos;t have an account?{' '}
+                            <Link
+                                href='/sign-up'
+                                className='text-blue-600 hover:text-blue-700 font-medium'
+                            >
+                                Sign up
+                            </Link>
+                        </div>
+                        <div className='text-sm'>
+                            <Link
+                                href='/forgot-password'
+                                className='text-blue-600 hover:text-blue-700 font-medium'
+                            >
+                                Forgot your password?
+                            </Link>
+                        </div>
+                    </div>
+                </form>
             </div>
-        </form>
+        </div>
     );
 };
 
