@@ -6,8 +6,8 @@ import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { PasswordInput } from '../ui/password-input';
 import { FaGoogle } from 'react-icons/fa';
-import { FaSpinner } from 'react-icons/fa';
 import { signIn } from 'next-auth/react';
+import { LoadingSpinner } from '../ui/loading-spinner';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { loginSchema, type LoginFormData } from '@/lib/zodSchemas';
@@ -39,7 +39,8 @@ const LoginForm = () => {
             if (result?.error) {
                 setError('root', {
                     type: 'manual',
-                    message: 'Invalid email or password',
+                    message:
+                        'Invalid email or password. Please check your credentials and try again.',
                 });
             } else {
                 // Redirect on success
@@ -48,7 +49,7 @@ const LoginForm = () => {
         } catch (error) {
             setError('root', {
                 type: 'manual',
-                message: 'An error occurred. Please try again.',
+                message: 'An unexpected error occurred. Please try again.',
             });
         } finally {
             setIsLoading(false);
@@ -59,8 +60,9 @@ const LoginForm = () => {
         <div className='min-h-screen flex items-center justify-center p-4'>
             <div className='w-full max-w-md'>
                 <form
-                    className='bg-white rounded-2xl shadow-xl border border-gray-100 p-8 space-y-6'
                     onSubmit={handleSubmit(onSubmit)}
+                    autoComplete="off"
+                    className='bg-white rounded-2xl shadow-xl border border-gray-100 p-8 space-y-6'
                 >
                     {/* Header */}
                     <div className='text-center space-y-2'>
@@ -126,10 +128,7 @@ const LoginForm = () => {
                         className='w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
                     >
                         {isSubmitting || isLoading ? (
-                            <div className='flex items-center space-x-2'>
-                                <FaSpinner size={18} className='animate-spin' />
-                                <span>Signing in...</span>
-                            </div>
+                            <LoadingSpinner text='Signing in...' />
                         ) : (
                             'Sign In'
                         )}

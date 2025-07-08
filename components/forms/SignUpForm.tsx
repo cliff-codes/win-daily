@@ -4,8 +4,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { Input } from '../ui/input';
 import { PasswordInput } from '../ui/password-input';
-import { FaGoogle, FaSpinner } from 'react-icons/fa';
+import { FaGoogle } from 'react-icons/fa';
 import { Button } from '../ui/button';
+import { LoadingSpinner } from '../ui/loading-spinner';
 import { addUser } from '@/lib/userController';
 import { signIn } from 'next-auth/react';
 import { signUpSchema, type SignUpFormData } from '@/lib/zodSchemas';
@@ -24,28 +25,59 @@ const SignUpForm = () => {
         mode: 'onChange',
     });
 
-    const handleGoogleSignUp = () => {
+    const handleGoogleSignUp = async () => {
         setIsLoading(true);
-        signIn('google');
-        setIsLoading(false);
+        try {
+            const result = await signIn('google', { redirect: false });
+            if (result?.error) {
+                setError('root', {
+                    type: 'manual',
+                    message: 'Google sign up failed. Please try again.',
+                });
+            } else if (result?.ok) {
+                window.location.href = '/dashboard/streaks';
+            }
+        } catch (error: any) {
+            setError('root', {
+                type: 'manual',
+                message: 'Google sign up failed. Please try again.',
+            });
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const onSubmit = async (data: SignUpFormData) => {
         try {
-            const { data: userData }: any = await addUser(data.userName, data.email, data.password);
+            const response = await addUser(data.userName, data.email, data.password);
 
-            if (userData) {
-                signIn('credentials', {
+            if (response.success) {
+                // Auto-login after successful signup
+                const signInResult = await signIn('credentials', {
                     email: data.email,
                     password: data.password,
-                    redirect: true,
-                    callbackUrl: '/dashboard/streaks',
+                    redirect: false,
+                });
+
+                if (signInResult?.error) {
+                    setError('root', {
+                        type: 'manual',
+                        message: 'Account created but login failed. Please try logging in.',
+                    });
+                } else {
+                    // Only redirect after successful login, never with sensitive data in the URL
+                    window.location.href = '/dashboard/streaks';
+                }
+            } else {
+                setError('root', {
+                    type: 'manual',
+                    message: response.error || 'Failed to create account. Please try again.',
                 });
             }
         } catch (error: any) {
             setError('root', {
                 type: 'manual',
-                message: 'Failed to create account. Please try again.',
+                message: 'An unexpected error occurred. Please try again.',
             });
         }
     };
@@ -54,7 +86,11 @@ const SignUpForm = () => {
         <div className='min-h-screen flex items-center justify-center p-4'>
             <div className='w-full max-w-md'>
                 <div className='bg-white rounded-2xl shadow-xl border border-gray-100 p-8 space-y-6'>
-                    <form className='space-y-6' onSubmit={handleSubmit(onSubmit)}>
+                    <form
+                        onSubmit={handleSubmit(onSubmit)}
+                        autoComplete="off"
+                        className='space-y-6'
+                    >
                         {/* Header */}
                         <div className='text-center space-y-2'>
                             <h1 className='text-3xl font-bold text-gray-900'>Create Account</h1>
@@ -172,10 +208,7 @@ const SignUpForm = () => {
                             className='w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
                         >
                             {isSubmitting ? (
-                                <div className='flex items-center space-x-2'>
-                                    <FaSpinner size={18} className='animate-spin' />
-                                    <span>Creating account...</span>
-                                </div>
+                                <LoadingSpinner text='Creating account...' />
                             ) : (
                                 'Create Account'
                             )}
@@ -200,7 +233,7 @@ const SignUpForm = () => {
                             className='w-full h-12 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium rounded-lg transition-colors flex items-center justify-center space-x-2'
                         >
                             {isLoading ? (
-                                <FaSpinner size={20} className='animate-spin' />
+                                <LoadingSpinner size={20} />
                             ) : (
                                 <>
                                     <FaGoogle size={20} className='text-red-500' />
