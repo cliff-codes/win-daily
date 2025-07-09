@@ -4,18 +4,23 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
-import { PasswordInput } from '../ui/password-input';
 import { FaGoogle } from 'react-icons/fa';
 import { signIn } from 'next-auth/react';
 import { LoadingSpinner } from '../ui/loading-spinner';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { loginSchema, type LoginFormData } from '@/lib/zodSchemas';
+import { IoMdEye, IoMdEyeOff } from 'react-icons/io';
 
 const LoginForm = () => {
     const searchParams = useSearchParams();
     const callbackUrl = searchParams.get('callbackUrl');
     const [isLoading, setIsLoading] = useState(false);
+    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+
+    const togglePasswordVisibility = () => {
+        setIsPasswordVisible(!isPasswordVisible);
+    };
 
     const {
         register,
@@ -26,6 +31,7 @@ const LoginForm = () => {
         resolver: zodResolver(loginSchema),
         mode: 'onChange',
     });
+
 
     const onSubmit = async (data: LoginFormData) => {
         setIsLoading(true);
@@ -61,7 +67,7 @@ const LoginForm = () => {
             <div className='w-full max-w-md'>
                 <form
                     onSubmit={handleSubmit(onSubmit)}
-                    autoComplete="off"
+                    autoComplete="on"
                     className='bg-white rounded-2xl shadow-xl border border-gray-100 p-8 space-y-6'
                 >
                     {/* Header */}
@@ -79,11 +85,10 @@ const LoginForm = () => {
                             </label>
                             <Input
                                 id='email'
-                                className={`w-full h-12 px-4 border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg transition-colors ${
-                                    errors.email
-                                        ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
-                                        : ''
-                                }`}
+                                className={`w-full h-12 px-4 border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg transition-colors ${errors.email
+                                    ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
+                                    : ''
+                                    }`}
                                 type='email'
                                 placeholder='Enter your email'
                                 {...register('email')}
@@ -100,12 +105,23 @@ const LoginForm = () => {
                             <label htmlFor='password' className='text-sm font-medium text-gray-700'>
                                 Password
                             </label>
-                            <PasswordInput
-                                id='password'
-                                placeholder='Enter your password'
-                                error={!!errors.password}
-                                {...register('password')}
-                            />
+                            {/* Password Input */}
+                            <div className='relative'>
+
+                                <Input
+                                    id='password'
+                                    type={isPasswordVisible ? 'text' : 'password'}
+                                    placeholder='Enter your password'
+                                    {...register('password')}
+                                />
+                                <button
+                                    type='button'
+                                    className='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors p-1'
+                                    onClick={togglePasswordVisibility}
+                                >
+                                    {!isPasswordVisible ? <IoMdEyeOff size={20} /> : <IoMdEye size={20} />}
+                                </button>
+                            </div>
                             {errors.password && (
                                 <div className='text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg border border-red-200'>
                                     {errors.password.message}

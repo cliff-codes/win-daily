@@ -1,7 +1,6 @@
 import { connectToDB } from '@/lib/connectionSetup';
 import { User } from '@/lib/models';
 import type { NextAuthOptions } from 'next-auth';
-import type { JWT } from 'next-auth/jwt';
 import GoogleProvider from 'next-auth/providers/google';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import bcryptjs from 'bcryptjs';

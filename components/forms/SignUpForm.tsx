@@ -3,23 +3,28 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { Input } from '../ui/input';
-import { PasswordInput } from '../ui/password-input';
 import { FaGoogle } from 'react-icons/fa';
 import { Button } from '../ui/button';
 import { LoadingSpinner } from '../ui/loading-spinner';
 import { addUser } from '@/lib/userController';
 import { signIn } from 'next-auth/react';
 import { signUpSchema, type SignUpFormData } from '@/lib/zodSchemas';
+import { IoMdEyeOff } from 'react-icons/io';
+import { IoMdEye } from 'react-icons/io';
 
 const SignUpForm = () => {
     const [isLoading, setIsLoading] = useState(false);
+    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+
+    const togglePasswordVisibility = () => {
+        setIsPasswordVisible(!isPasswordVisible);
+    };
 
     const {
         register,
         handleSubmit,
         formState: { errors, isSubmitting },
         setError,
-        watch,
     } = useForm<SignUpFormData>({
         resolver: zodResolver(signUpSchema),
         mode: 'onChange',
@@ -109,11 +114,10 @@ const SignUpForm = () => {
                                 </label>
                                 <Input
                                     id='userName'
-                                    className={`w-full h-12 px-4 border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg transition-colors ${
-                                        errors.userName
-                                            ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
-                                            : ''
-                                    }`}
+                                    className={`w-full h-12 px-4 border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg transition-colors ${errors.userName
+                                        ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
+                                        : ''
+                                        }`}
                                     type='text'
                                     placeholder='Enter your username'
                                     {...register('userName')}
@@ -135,11 +139,10 @@ const SignUpForm = () => {
                                 </label>
                                 <Input
                                     id='email'
-                                    className={`w-full h-12 px-4 border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg transition-colors ${
-                                        errors.email
-                                            ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
-                                            : ''
-                                    }`}
+                                    className={`w-full h-12 px-4 border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg transition-colors ${errors.email
+                                        ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
+                                        : ''
+                                        }`}
                                     type='email'
                                     placeholder='Enter your email'
                                     {...register('email')}
@@ -159,12 +162,21 @@ const SignUpForm = () => {
                                 >
                                     Password
                                 </label>
-                                <PasswordInput
-                                    id='password'
-                                    placeholder='Enter your password'
-                                    error={!!errors.password}
-                                    {...register('password')}
-                                />
+                                <div className='relative'>
+                                    <Input
+                                        id='password'
+                                        type={isPasswordVisible ? 'text' : 'password'}
+                                        placeholder='Enter your password'
+                                        {...register('password')}
+                                    />
+                                    <button
+                                        type='button'
+                                        className='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors p-1'
+                                        onClick={togglePasswordVisibility}
+                                    >
+                                        {!isPasswordVisible ? <IoMdEyeOff size={20} /> : <IoMdEye size={20} />}
+                                    </button>
+                                </div>
                                 {errors.password && (
                                     <div className='text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg border border-red-200'>
                                         {errors.password.message}
@@ -180,12 +192,21 @@ const SignUpForm = () => {
                                 >
                                     Confirm Password
                                 </label>
-                                <PasswordInput
-                                    id='confirmPassword'
-                                    placeholder='Confirm your password'
-                                    error={!!errors.confirmPassword}
-                                    {...register('confirmPassword')}
-                                />
+                                <div className='relative'>
+                                    <Input
+                                        id='confirmPassword'
+                                        type={isPasswordVisible ? 'text' : 'password'}
+                                        placeholder='Confirm your password'
+                                        {...register('confirmPassword')}
+                                    />
+                                    <button
+                                        type='button'
+                                        className='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors p-1'
+                                        onClick={togglePasswordVisibility}
+                                    >
+                                        {!isPasswordVisible ? <IoMdEyeOff size={20} /> : <IoMdEye size={20} />}
+                                    </button>
+                                </div>
                                 {errors.confirmPassword && (
                                     <div className='text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg border border-red-200'>
                                         {errors.confirmPassword.message}
